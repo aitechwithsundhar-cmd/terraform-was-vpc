@@ -12,17 +12,19 @@ resource "aws_internet_gateway" "main" {
   tags = local.vpc_final_tags
 }
 
-# resource "aws_subnet" "public" {
-#   count                   = length(var.public_subnet_cidrs)
-#   vpc_id                  = aws_vpc.main.id
-#   cidr_block              = var.public_subnet_cidrs[count.index]
-#   map_public_ip_on_launch = true
+resource "aws_subnet" "public" {
+  count                   = length(var.public_subnet_cidrs)
+  vpc_id                  = aws_vpc.main.id
+  cidr_block              = var.public_subnet_cidrs[count.index]
+  availability_zone       = local.az_names[count.index]
+  map_public_ip_on_launch = true
 
-#   tags = merge(
-#     local.common_tags,
-#     {
-#       Name = "${var.project}-${var.environment}-public-${count.index + 1}"
-#     }
-#   )
+  tags = merge(
+    local.common_tags,
+    {
+      Name = "${var.project}-${var.environment}-public-${local.az_names[count.index]}"
+    },
+    var.public_subnet_tags
+  )
   
-# }
+}
