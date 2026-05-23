@@ -26,13 +26,13 @@ resource "aws_subnet" "public" {
     },
     var.public_subnet_tags
   )
-  
+
 }
 resource "aws_subnet" "private" {
-  count                   = length(var.private_subnet_cidrs)
-  vpc_id                  = aws_vpc.main.id
-  cidr_block              = var.private_subnet_cidrs[count.index]
-  availability_zone       = local.az_names[count.index]
+  count             = length(var.private_subnet_cidrs)
+  vpc_id            = aws_vpc.main.id
+  cidr_block        = var.private_subnet_cidrs[count.index]
+  availability_zone = local.az_names[count.index]
 
   tags = merge(
     local.common_tags,
@@ -41,7 +41,7 @@ resource "aws_subnet" "private" {
     },
     var.private_subnet_tags
   )
-  
+
 }
 resource "aws_subnet" "database" {
   count                   = length(var.database_subnet_cidrs)
@@ -57,7 +57,7 @@ resource "aws_subnet" "database" {
     },
     var.database_subnet_tags
   )
-  
+
 }
 
 resource "aws_route_table" "public" {
@@ -102,7 +102,7 @@ resource "aws_route" "public" {
   gateway_id             = aws_internet_gateway.main.id
 }
 
-resource "aws_eip" "nat"{
+resource "aws_eip" "nat" {
   domain = "vpc"
   tags = merge(
     local.common_tags,
@@ -129,13 +129,13 @@ resource "aws_nat_gateway" "main" {
 resource "aws_route" "private" {
   route_table_id         = aws_route_table.private.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id             = aws_nat_gateway.main.id
+  nat_gateway_id         = aws_nat_gateway.main.id
 }
 
 resource "aws_route" "database" {
   route_table_id         = aws_route_table.database.id
   destination_cidr_block = "0.0.0.0/0"
-  nat_gateway_id             = aws_nat_gateway.main.id
+  nat_gateway_id         = aws_nat_gateway.main.id
 }
 
 resource "aws_route_table_association" "public" {
